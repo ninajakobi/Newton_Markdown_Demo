@@ -1,0 +1,94 @@
+---
+title: "Using LIO background imagery for mapping in R"
+author: "Erica Newton"
+date: "`r format(Sys.Date(), '%b %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Use a georeferenced TIF as a background
+
+- I created the .TIF by using the LIO topographic map as my baselayer in ArcGIS Pro, then exporting it as a georeferenced .TIF in ArcGIS Pro
+- Tip - use a custom large size in ArcGIS Pro and ensure output resolution is high; consider using Map Series for multiple backgrounds
+
+```{r}
+# install/load required libraries
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(raster, tidyverse, sf, RStoolbox)
+```
+
+## Bring in georeferenced tif
+```{r}
+basemap <- brick("PeterboroughMap.tif")
+# get the coordinate reference system 
+mycrs <- st_crs(basemap)
+```
+
+## Create some example spatial data to map on top
+```{r}
+# Choose a few random locations in Peterborough
+my_points <- tibble(latitude = c(44.305907, 44.307612, 44.314083, 44.282756847),
+                    longitude = c(-78.333753, -78.336279, -78.325517, -78.32322240),
+                    name = c("point 1", "point 2", "point 3", "point 4"),
+                    value = c("good", "best", "best", "satisfactory"))
+
+# Convert to spatial points df
+my_points <- st_as_sf(my_points,                         
+           coords = c("longitude", "latitude"),
+           crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+# Make sure crs is the same as my base layer
+my_points <- st_transform(my_points, mycrs)
+```
+
+
+```{r}
+# map in a ggplot2 framework
+ggRGB(basemap, r = 1, g = 2, b = 3) +
+  geom_sf(data = my_points, aes(color = value), size = 5) +
+  theme_void(base_size = 15) +
+  theme(legend.position = c(0.8, 0.8))
+```
+
+## Clip basemap to extent of points buffered by 200 m, then map again  
+
+```{r}
+small_basemap <- crop(basemap, extent(st_buffer(my_points, 200)))
+
+ggRGB(small_basemap, r = 1, g = 2, b = 3) +
+  geom_sf(data = my_points, aes(color = value), size = 5) +
+  theme_void(base_size = 15)
+```
+
+# For using rasters with leaflet:  
+
+- https://rstudio.github.io/leaflet/raster.html
+
+
+# Extract backgrounds from an image service hosted on ArcGIS Online
+
+- I'm currently waiting for help on getting this to work   
+- See https://github.com/R-ArcGIS/r-bridge/issues/54  
+- Note that you must have an installation of ArcGIS Pro + ArcGIS Online account for this + install r-ArcGIS bridge.
+
+```{r}
+library(arcgisbinding)
+arc.check_product()
+
+## Read in a District Polygon from D.C.
+r.bound <- arc.data2sf(arc.select(arc.open('https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Planning_Landuse_and_Zoning_WebMercator/MapServer/31')))
+
+## Choose the smallest zone
+Blagdon <- r.bound %>% filter(NAME == "Blagden Alley Residential Transition Area")
+
+## Set Boundary to Image Service
+r.obj <- arc.open('https://imagery.dcgis.dc.gov/dcgis/rest/services/Ortho/Ortho_2019/ImageServer')
+r.arc <- arc.raster(r.obj, extent = extent(Blagdon))
+
+# NOT WORKING
+#r.R <- as.raster(r.arc)
+#plotRGB(r.R)
+```
+
+
