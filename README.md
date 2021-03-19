@@ -7,7 +7,7 @@ I'd like to use the project to demonstrate a cool trick for displaying data in R
 
 1. How to conditionally format tables in a markdown report - e.g., like this:
 
-![Northeast_Timmins](https://user-images.githubusercontent.com/38108750/111194455-987ccd00-8591-11eb-8275-2f7185c884d0.png)
+![image](https://user-images.githubusercontent.com/38108750/111197358-c44d8200-8594-11eb-9dd0-edd9ecb4a7e0.png)
 
 2. How to make your data tables, graphs, maps etc interactive in a html markdown report using `crosstalk`, which is like a "Shiny-light" to create simple widgets
 3. How to save and use LIO's topographic map backgrounds as a basemap for ggplot maps in R.  
