@@ -6,6 +6,11 @@ output:
   html_document:
     df_print: paged
 ---
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
 
 # Use a georeferenced TIF as a background
 
@@ -72,7 +77,7 @@ ggRGB(small_basemap, r = 1, g = 2, b = 3) +
 - See https://github.com/R-ArcGIS/r-bridge/issues/54  
 - Note that you must have an installation of ArcGIS Pro + ArcGIS Online account for this + install r-ArcGIS bridge.
 
-```{r}
+```{r arcbinding, eval=FALSE}
 library(arcgisbinding)
 arc.check_product()
 
