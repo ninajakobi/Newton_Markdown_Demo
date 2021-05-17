@@ -115,6 +115,7 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
   theme(legend.position = c(0.8, 0.8))
 ```
 
+```{r}
 ##crop to zoom in on lower bay and plot Fall 2018 sites
 ```{r}
 load(file="Allgear.Rdata")
@@ -128,4 +129,9 @@ crop_mylake <- crop(mylake, extent(st_buffer(CSMI_points, 400)))
 ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
   geom_sf(data = CSMI_points, aes(color = value), size = 5) +
   theme_void(base_size = 15)
+```
+
+```{r}
+# Best places in Bruce County
+BC <- ("BruceCounty.tif")
 ```
