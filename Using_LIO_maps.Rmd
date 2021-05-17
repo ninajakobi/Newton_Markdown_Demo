@@ -116,5 +116,22 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
 ```
 
 ```{r}
+##crop to zoom in on lower bay and plot Fall 2018 sites
+```{r}
+load(file="Allgear.Rdata")
+CSMI_points <- st_as_sf(allgear,                         
+           coords = c("LONGITUDE", "LATITUDE"),
+           crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+CSMI_points <- st_transform(CSMI_points, mycrs)
+
+crop_mylake <- crop(mylake, extent(st_buffer(CSMI_points, 400)))
+
+ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
+  geom_sf(data = CSMI_points, aes(color = value), size = 5) +
+  theme_void(base_size = 15)
+```
+
+```{r}
 # Best places in Bruce County
 BC <- ("BruceCounty.tif")
+```
