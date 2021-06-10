@@ -5,6 +5,7 @@ date: "`r format(Sys.Date(), '%b %d, %Y')`"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -122,7 +123,6 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
 
 ```{r}
 ##crop to zoom in on lower bay and plot Fall 2018 sites
-```{r}
 load(file="Allgear.Rdata")
 CSMI_points <- st_as_sf(allgear,                         
            coords = c("LONGITUDE", "LATITUDE"),
@@ -132,7 +132,7 @@ CSMI_points <- st_transform(CSMI_points, mycrs)
 crop_mylake <- crop(mylake, extent(st_buffer(CSMI_points, 400)))
 
 ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
-  geom_sf(data = CSMI_points, aes(color = value), size = 5) +
+  geom_sf(data = CSMI_points, size = 5) +
   theme_void(base_size = 15)
 ```
 
@@ -141,28 +141,4 @@ ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
 BC <- ("BruceCounty.tif")
 ```
 
-```{r rachels-map}
-
-# borrow the Bruce County base map
-bruce_map <- brick(BC)
-bruce_crs <- st_crs(bruce_map)
-
-# list of places Rachel has gone camping:
-camping <- tibble(latitude = c(45.23090243980543, 44.41411829694316, 44.53774239289965, 43.24856359980997, 44.29964881461152),
-                    longitude = c(-81.52241785248054, -81.45530851742954, -80.35132345391561, -81.82370140476118, -81.58808660209003),
-                    park = c("bruce_peninsula", "macgregor_point", "craigleith", "pinery", "inverhuron"),
-                    park_type = c("national", "provincial", "provincial", "provincial", "provincial")) %>% 
-    st_as_sf(coords = c("longitude", "latitude")) %>%
-  st_set_crs(bruce_crs)
-
-# plot on map
-ggRGB(bruce_map, r = 1, g = 2, b = 3) +
-  geom_sf(data = camping, aes(fill = park_type), size = 5, shape = 21) +
-  scale_fill_manual(values = c("green4", "dodgerblue4"), 
-                    breaks = c("National", "Provincial"), name = "Park Type")+
-  theme_void(base_size = 15) +
-  theme(legend.position = c(0.8, 0.8))
-
-
-```
 
