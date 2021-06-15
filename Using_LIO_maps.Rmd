@@ -5,6 +5,7 @@ date: "`r format(Sys.Date(), '%b %d, %Y')`"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -43,6 +44,8 @@ my_points <- st_as_sf(my_points,
            coords = c("longitude", "latitude"),
            crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
+area_of_interest <- st_buffer(st_as_sfc(st_bbox(dplyr::filter(my_points, value != "satisfactory"))), 250)
+
 # Make sure crs is the same as my base layer
 my_points <- st_transform(my_points, mycrs)
 ```
@@ -51,7 +54,10 @@ my_points <- st_transform(my_points, mycrs)
 ```{r}
 # map in a ggplot2 framework
 ggRGB(basemap, r = 1, g = 2, b = 3) +
-  geom_sf(data = my_points, aes(color = value), size = 5) +
+  geom_sf(data = my_points, aes(fill = value), size = 5, shape = 21) +
+  scale_fill_manual(values = c("mediumorchid3", "deeppink3", "dodgerblue4"), 
+                    breaks = c("best", "good", "satisfactory"), name = "Rating")+
+  geom_sf(data = area_of_interest, fill = NA, colour = "orange", size = 2)+
   theme_void(base_size = 15) +
   theme(legend.position = c(0.8, 0.8))
 ```
@@ -117,7 +123,6 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
 
 ```{r}
 ##crop to zoom in on lower bay and plot Fall 2018 sites
-```{r}
 load(file="Allgear.Rdata")
 CSMI_points <- st_as_sf(allgear,                         
            coords = c("LONGITUDE", "LATITUDE"),
@@ -127,7 +132,7 @@ CSMI_points <- st_transform(CSMI_points, mycrs)
 crop_mylake <- crop(mylake, extent(st_buffer(CSMI_points, 400)))
 
 ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
-  geom_sf(data = CSMI_points, aes(color = value), size = 5) +
+  geom_sf(data = CSMI_points, size = 5) +
   theme_void(base_size = 15)
 ```
 
@@ -135,3 +140,5 @@ ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
 # Best places in Bruce County
 BC <- ("BruceCounty.tif")
 ```
+
+
