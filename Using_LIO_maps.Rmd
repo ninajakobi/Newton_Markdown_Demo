@@ -44,10 +44,10 @@ my_points <- st_as_sf(my_points,
            coords = c("longitude", "latitude"),
            crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
-area_of_interest <- st_buffer(st_as_sfc(st_bbox(dplyr::filter(my_points, value != "satisfactory"))), 250)
-
 # Make sure crs is the same as my base layer
 my_points <- st_transform(my_points, mycrs)
+
+area_of_interest <- st_buffer(st_as_sfc(st_bbox(dplyr::filter(my_points, value != "satisfactory"))), 250)
 ```
 
 
@@ -56,8 +56,8 @@ my_points <- st_transform(my_points, mycrs)
 ggRGB(basemap, r = 1, g = 2, b = 3) +
   geom_sf(data = my_points, aes(fill = value), size = 5, shape = 21) +
   scale_fill_manual(values = c("mediumorchid3", "deeppink3", "dodgerblue4"), 
-                    breaks = c("best", "good", "satisfactory"), name = "Rating")+
-  geom_sf(data = area_of_interest, fill = NA, colour = "orange", size = 2)+
+                    breaks = c("best", "good", "satisfactory"), name = "Rating") +
+  geom_sf(data = area_of_interest, fill = NA, colour = "orange", size = 2) +
   theme_void(base_size = 15) +
   theme(legend.position = c(0.8, 0.8))
 ```
@@ -138,7 +138,9 @@ ggRGB(crop_mylake, r = 1, g = 2, b = 3) +
 
 ```{r}
 # Best places in Bruce County
-BC <- ("BruceCounty.tif")
+BC <- brick("BruceCounty.tif")
+ggRGB(BC, r = 1, g = 2, b = 3) +
+  theme_void(base_size = 15)
 ```
 
 
