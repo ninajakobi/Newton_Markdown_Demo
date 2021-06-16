@@ -115,6 +115,20 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
   theme(legend.position = c(0.8, 0.8))
 ```
 
+
+## Bring in georeferenced tif
 ```{r}
-# Best places in Bruce County
-BC <- ("BruceCounty.tif")
+basemap <- brick("BruceCounty.tif")
+# get the coordinate reference system 
+mycrs <- st_crs(basemap)
+```
+
+## Create some example spatial data to map on top
+```{r}
+# Choose favorite locations in Bruce County
+my_points <- tibble(latitude = c(45.24503, 44.526136, 45.24643, 45.255174, 44.621662),
+                    longitude = c(-81.521974, -80.934248, -81.299861, -81.680826, -80.95464),
+                    name = c("point 1", "point 2", "point 3", "point 4", "point 5"),
+                    value = c("Grotto", "Inglis Waterfall", "shipwreck", "Sweepsteak Shipwreck", "Indian Waterfalls"))
+
+```
