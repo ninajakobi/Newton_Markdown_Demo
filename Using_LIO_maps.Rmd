@@ -118,9 +118,9 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
 
 ## Bring in georeferenced tif
 ```{r}
-basemap <- brick("BruceCounty.tif")
+basemap <- brick("BruceCounty2.tif")
 # get the coordinate reference system 
-mycrs <- st_crs(basemap)
+mycrs <-st_crs(basemap)
 ```
 
 ## Create some example spatial data to map on top
