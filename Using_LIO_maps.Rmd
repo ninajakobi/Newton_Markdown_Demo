@@ -118,17 +118,28 @@ ggRGB(mylake, r = 1, g = 2, b = 3) +
 
 ## Bring in georeferenced tif
 ```{r}
-basemap <- brick("BruceCounty2.tif")
+BC <- brick("BruceCounty2.tif")
 # get the coordinate reference system 
-mycrs <-st_crs(basemap)
+#mycrs <-st_crs(basemap)
 ```
 
-## Create some example spatial data to map on top
 ```{r}
+## Create some examples of spatial data to map on to
 # Choose favorite locations in Bruce County
-my_points <- tibble(latitude = c(45.24503, 44.526136, 45.24643, 45.255174, 44.621662),
-                    longitude = c(-81.521974, -80.934248, -81.299861, -81.680826, -80.95464),
-                    name = c("point 1", "point 2", "point 3", "point 4", "point 5"),
-                    value = c("Grotto", "Inglis Waterfall", "shipwreck", "Sweepsteak Shipwreck", "Indian Waterfalls"))
+BC_points <- tibble(LAT = c(45.24503, 44.526136, 45.24643, 45.255174),
+                    LON = c(-81.521974, -80.934248, -81.299861, -81.680826),
+                    name = c("point 1", "point 2", "point 3", "point 4"),
+                    value = c("Grotto", "Inglis Waterfall", "shipwreck", "Sweepsteak Shipwreck"))
 
+BC_points <- st_as_sf(BC_points,                         
+           coords = c("LON", "LAT"),
+           crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+
+# Make sure crs is the same as my base layer
+BC_points <- st_transform(BC_points, mycrs)
+ggRGB(BC, r = 1, g = 2, b = 3) +
+  geom_sf(data = BC_points) +
+  theme_void(base_size = 15) +
+  theme(legend.position = c(0.8, 0.8))
 ```
